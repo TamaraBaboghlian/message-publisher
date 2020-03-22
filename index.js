@@ -42,16 +42,19 @@ app.post('/publish', (req, res) => {
 app.use(error)
 
 io.on('connection', (socket) => {
+    console.log('client connected');
     socket.on('chat message', function (data) {
         io.emit('chat message', data.message);
     });
     socket.on('disconnect', function () {
+        console.log('client disconnected');
     });
 });
 
 const port = process.env.PORT || 3000;
 
 http.listen(port, () => {
+    console.log(`Listening on port ${port}...`);
 });
 
 function validate(req) {
