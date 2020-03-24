@@ -34,7 +34,7 @@ app.get('/', (req, res) => {
 app.post('/publish', (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
-    io.emit('chat message', req.body.message);
+    io.emit('pub message', req.body.message);
     res.sendStatus(200);
 })
 
@@ -43,8 +43,8 @@ app.use(error)
 
 io.on('connection', (socket) => {
     console.log('client connected');
-    socket.on('chat message', function (data) {
-        io.emit('chat message', data.message);
+    socket.on('pub message', function (data) {
+        io.emit('pub message', data.message);
     });
     socket.on('disconnect', function () {
         console.log('client disconnected');
