@@ -5,7 +5,7 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const error = require('./middleware/error');
 const winston = require('winston');
-const Joi = require('joi');
+const validate = require('./middleware/validation');
 require('express-async-errors');
 
 // handling and logging exceptions thrown from outside request processing pipeline
@@ -31,9 +31,7 @@ app.get('/', (req, res) => {
     res.render('index');
 })
 
-app.post('/publish', (req, res) => {
-    const { error } = validate(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
+app.post('/publish', validate, (req, res) => {
     io.emit('pub message', req.body.message);
     res.sendStatus(200);
 })
@@ -56,11 +54,3 @@ const port = process.env.PORT || 3000;
 http.listen(port, () => {
     console.log(`Listening on port ${port}...`);
 });
-
-function validate(req) {
-    const schema = {
-        message: Joi.string().min(3).required()
-    };
-
-    return Joi.validate(req, schema);
-}
